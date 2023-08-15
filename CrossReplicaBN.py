@@ -74,7 +74,7 @@ class _BatchNorm(nn.Module):
         if (version is None or version < 2) and self.track_running_stats:
             # at version 2: added num_batches_tracked buffer
             #               this should have a default value of 0
-            num_batches_tracked_key = prefix + 'num_batches_tracked'
+            num_batches_tracked_key = f'{prefix}num_batches_tracked'
             if num_batches_tracked_key not in state_dict:
                 state_dict[num_batches_tracked_key] = torch.tensor(0, dtype=torch.long)
 
@@ -150,5 +150,4 @@ class ScaledCrossReplicaBatchNorm2d(_BatchNorm):
 
     def _check_input_dim(self, input):
         if input.dim() != 4:
-            raise ValueError('expected 4D input (got {}D input)'
-                             .format(input.dim()))
+            raise ValueError(f'expected 4D input (got {input.dim()}D input)')

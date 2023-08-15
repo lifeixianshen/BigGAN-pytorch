@@ -37,8 +37,9 @@ def sample(noise, label, truncation=1., batch_size=8, vocab_size=vocab_size):
     if len(label.shape) == 0:
         label = np.asarray([label] * num)
     if label.shape[0] != num:
-        raise ValueError('Got # noise samples ({}) != # label samples ({})'
-                         .format(noise.shape[0], label.shape[0]))
+        raise ValueError(
+            f'Got # noise samples ({noise.shape[0]}) != # label samples ({label.shape[0]})'
+        )
     label = one_hot_if_needed(label, vocab_size)
     ims = []
     for batch_start in range(0, num, batch_size):

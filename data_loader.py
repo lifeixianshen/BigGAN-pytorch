@@ -22,28 +22,23 @@ class Data_Loader():
             options.append(transforms.ToTensor())
         if normalize:
             options.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
-        transform = transforms.Compose(options)
-        return transform
+        return transforms.Compose(options)
 
     def load_lsun(self, classes=['church_outdoor_train','classroom_train']):
         transforms = self.transform(True, True, True, False)
-        dataset = dsets.LSUN(self.path, classes=classes, transform=transforms)
-        return dataset
+        return dsets.LSUN(self.path, classes=classes, transform=transforms)
     
     def load_imagenet(self):
         transforms = self.transform(True, True, True, True)
-        dataset = dsets.ImageFolder(self.path+'/imagenet', transform=transforms)
-        return dataset
+        return dsets.ImageFolder(f'{self.path}/imagenet', transform=transforms)
 
     def load_celeb(self):
         transforms = self.transform(True, True, True, True)
-        dataset = dsets.ImageFolder(self.path+'/CelebA', transform=transforms)
-        return dataset
+        return dsets.ImageFolder(f'{self.path}/CelebA', transform=transforms)
 
     def load_off(self):
         transforms = self.transform(True, True, True, False)
-        dataset = dsets.ImageFolder(self.path, transform=transforms)
-        return dataset
+        return dsets.ImageFolder(self.path, transform=transforms)
 
     def loader(self):
         if self.dataset == 'lsun':
@@ -56,10 +51,11 @@ class Data_Loader():
             dataset = self.load_off()
 
         print('dataset',len(dataset))
-        loader = torch.utils.data.DataLoader(dataset=dataset,
-                                              batch_size=self.batch,
-                                              shuffle=self.shuf,
-                                              num_workers=2,
-                                              drop_last=True)
-        return loader
+        return torch.utils.data.DataLoader(
+            dataset=dataset,
+            batch_size=self.batch,
+            shuffle=self.shuf,
+            num_workers=2,
+            drop_last=True,
+        )
 

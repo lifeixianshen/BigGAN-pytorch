@@ -13,7 +13,7 @@ category = "951"
 
 
 z = truncated_z_sample(num_samples, truncation, noise_seed)
-y = int(951)
+y = 951
 # print(z)
 
 

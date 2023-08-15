@@ -15,8 +15,8 @@ class Spectral_Norm:
         self.name = name
 
     def compute_weight(self, module):
-        weight = getattr(module, self.name + '_orig')
-        u = getattr(module, self.name + '_u')
+        weight = getattr(module, f'{self.name}_orig')
+        u = getattr(module, f'{self.name}_u')
         size = weight.size()
         weight_mat = weight.contiguous().view(size[0], -1)
         with torch.no_grad():
@@ -36,11 +36,11 @@ class Spectral_Norm:
 
         weight = getattr(module, name)
         del module._parameters[name]
-        module.register_parameter(name + '_orig', weight)
+        module.register_parameter(f'{name}_orig', weight)
         input_size = weight.size(0)
         u = weight.new_empty(input_size).normal_()
         module.register_buffer(name, weight)
-        module.register_buffer(name + '_u', u)
+        module.register_buffer(f'{name}_u', u)
 
         module.register_forward_pre_hook(fn)
 
@@ -49,7 +49,7 @@ class Spectral_Norm:
     def __call__(self, module, input):
         weight_sn, u = self.compute_weight(module)
         setattr(module, self.name, weight_sn)
-        setattr(module, self.name + '_u', u)
+        setattr(module, f'{self.name}_u', u)
 
 
 def spectral_norm(module, name='weight'):
@@ -196,17 +196,14 @@ class GBlock(nn.Module):
         if self.downsample:
             out = F.avg_pool2d(out, 2)
 
+        skip = input
         if self.skip_proj:
-            skip = input
             if self.upsample:
                 # TODO different form papers
                 skip = F.upsample(skip, scale_factor=2)
             skip = self.conv_sc(skip)
             if self.downsample:
                 skip = F.avg_pool2d(skip, 2)
-
-        else:
-            skip = input
 
         return out + skip
 
@@ -243,9 +240,9 @@ class Generator(nn.Module):
         # out = out.view(-1, 1536, 4, 4)
         out = out.view(-1, self.first_view, 4, 4)
         ids = 1
-        for i, conv in enumerate(self.conv):
+        for conv in self.conv:
             if isinstance(conv, GBlock):
-                
+
                 conv_code = codes[ids]
                 ids = ids+1
                 condition = torch.cat([conv_code, class_emb], 1)
